@@ -1,4 +1,5 @@
-= Library for checking passwords against the haveibeenpwned.com database =
+Library for checking passwords against the [haveibeenpwned.com](https://haveibeenpwned.com) database
+======================================================================
 
 By means of this library you can do some basic strength check on new user
 passwords. Common weak passwords like many plain English words or also many
