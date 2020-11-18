@@ -14,7 +14,7 @@ Example
 
 > {-# LANGUAGE OverloadedStrings #-}
 > module Readme where
-> 
+>
 > import Control.Monad.IO.Class (liftIO)
 > import Control.Monad.Logger (runStdoutLoggingT)
 > import Control.Exception (bracket_)
@@ -42,7 +42,7 @@ Example
 >         putStrLn $ "You have been pwned! Your password has appeared in breaches " ++ show p'' ++ " times."
 >       HaveIBeenPwnedResult_Error ->
 >         putStrLn "Network Error, try again later"
-> 
+>
 > getPassword :: IO String
 > getPassword = do
 >   putStr "Password: "
@@ -50,11 +50,11 @@ Example
 >   password <- withEcho False getLine
 >   putChar '\n'
 >   return password
-> 
+>
 > withEcho :: Bool -> IO a -> IO a
 > withEcho echo action = do
 >   old <- hGetEcho stdin
 >   bracket_ (hSetEcho stdin echo) (hSetEcho stdin old) action
-> 
+>
 > main :: IO ()
 > main = consoleHaveIBeenPwned
