@@ -1,5 +1,9 @@
 # Revision history for haveibeenpwned
 
+## 0.2.0.1
+
+* Add readme to extra-source-files so that it appears on hackage
+
 ## 0.2.0.0
 
 * Breaking change in order to make the API and the implementation more secure.
