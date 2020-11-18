@@ -1,14 +1,10 @@
-{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE PackageImports #-}
-{-# LANGUAGE RankNTypes #-}
-{-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeApplications #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 -- | Query haveibeenpwned database to check basic password strength in a secure way.
@@ -17,22 +13,19 @@
 --   get some means for rejecting very weak or just leaked passwords.
 module HaveIBeenPwned where
 
-import "cryptonite" Crypto.Hash -- or maybe i wanted cryptonite?
-import Control.Monad.Reader
-import Control.Monad.Logger
+import "cryptonite" Crypto.Hash
 import Control.Exception
+import Control.Monad.Logger
+import Control.Monad.Reader
 import Data.ByteString (ByteString)
 import qualified Data.ByteString.Lazy as LBS
-import Data.Text(Text)
-import Data.Text.Encoding(encodeUtf8)
+import Data.Text (Text)
+import qualified Data.Text as T
+import Data.Text.Encoding (encodeUtf8)
+import qualified Data.Text.Lazy as LT
 import qualified Data.Text.Lazy.Encoding
 import Network.HTTP.Client
-import Network.HTTP.Client.TLS
-import Network.HTTP.Types.Status(Status(..))
-import System.IO
-import qualified Data.Text as T
-import qualified Data.Text.Lazy as LT
-import Data.Default (def)
+import Network.HTTP.Types.Status (Status(..))
 import Safe (readMay)
 
 data HaveIBeenPwnedConfig = HaveIBeenPwnedConfig
