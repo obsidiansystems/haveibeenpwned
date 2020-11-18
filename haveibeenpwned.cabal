@@ -1,36 +1,38 @@
-cabal-version:       2.2
-name:                haveibeenpwned
-version:             0.1.0.0
-synopsis:            Library for checking for weak/compromised passwords.
-description:         This library uses the haveibeenpwned database to check for weak or compromised passwords.
-bug-reports:         https://github.com/obsidiansystems/haveibeenpwned/issues
-license:             BSD-3-Clause
-license-file:        LICENSE
-author:              Obsidian Systems
-maintainer:          robert.klotzner@gmx.at
-copyright:           2019 Obsidian Systems LLC
-category:            Web
-extra-source-files:  CHANGELOG.md
-tested-with:
-  GHC  ==8.6.5
+cabal-version:      2.2
+name:               haveibeenpwned
+version:            0.1.0.0
+synopsis:           Library for checking for weak/compromised passwords.
+description:
+  This library uses the haveibeenpwned database to check for weak or compromised passwords.
+
+bug-reports:        https://github.com/obsidiansystems/haveibeenpwned/issues
+license:            BSD-3-Clause
+license-file:       LICENSE
+author:             Obsidian Systems LLC
+maintainer:         maintainer@obsidian.systems
+copyright:          2019 Obsidian Systems LLC
+category:           Web
+extra-source-files: CHANGELOG.md
+tested-with:        GHC ==8.6.5 || ==8.8.4
 
 library
-  exposed-modules:     HaveIBeenPwned
+  exposed-modules:  HaveIBeenPwned
   build-depends:
-    base                              >= 4.11.0 && < 4.15,
-    bytestring                        >= 0.10.8 && < 0.11,
-    cryptohash                        >= 0.11.9 && < 0.12,
-    data-default                      >= 0.7.1 && < 0.8,
-    http-client                       >= 0.5.13.1 && < 0.7,
-    text                              >= 1.2.3 && < 1.3,
-    mtl                               >= 2.2.2 && < 2.3,
-    http-types                        >= 0.12.1 && < 0.13,
-    http-client-tls                   >= 0.3.5 && < 0.4,
-    monad-logger                      >= 0.3.29 && < 0.4,
-    safe                              >= 0.3.17 && < 0.4,
-  hs-source-dirs:      src
-  default-language:    Haskell2010
+    , base             >=4.11.0   && <4.15
+    , bytestring       ^>=0.10.8
+    , cryptohash       ^>=0.11.9
+    , data-default     ^>=0.7.1
+    , http-client      >=0.5.13.1 && <0.7
+    , http-client-tls  ^>=0.3.5
+    , http-types       ^>=0.12.1
+    , monad-logger     ^>=0.3.29
+    , mtl              ^>=2.2.2
+    , safe             ^>=0.3.17
+    , text             ^>=1.2.3
+
+  hs-source-dirs:   src
+  default-language: Haskell2010
 
 source-repository head
-  type: git
+  type:     git
   location: https://github.com/obsidiansystems/haveibeenpwned
