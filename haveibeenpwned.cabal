@@ -13,6 +13,7 @@ maintainer:         maintainer@obsidian.systems
 copyright:          2019 Obsidian Systems LLC
 category:           Web
 extra-source-files: CHANGELOG.md
+                    README.md
 tested-with:        GHC ==8.6.5 || ==8.8.4
 
 library
