@@ -34,5 +34,3 @@ library
 source-repository head
   type: git
   location: https://github.com/obsidiansystems/haveibeenpwned
-
-
