@@ -35,24 +35,26 @@ import qualified Data.Text.Lazy as LT
 import Data.Default (def)
 import Safe (readMay)
 
-data HaveIBeenPwnedError
-  = HaveIBeenPwnedError_BadResponse Status
-  | HaveIBeenPwnedError_NetworkError HttpException
-  deriving (Show) -- no eq instance for HttpException
-
 data HaveIBeenPwnedConfig = HaveIBeenPwnedConfig
   { _haveIBeenPwnedConfig_manager :: Manager
   , _haveIBeenPwnedConfig_apihost :: Text
   }
 
 -- | Result of a password check.
-data HaveIBeenPwnedResult
-  = HaveIBeenPwnedResult_Disclosed Int
-    -- ^ How many times the password was found in public places.  0 means
-    -- obviously none, thus the password is considered "secure", as far as the
-    -- database can tell.
-  | HaveIBeenPwnedResult_ApiError
-    -- ^ The check failed for some reason.
+--
+--   It is either considered secure, insecure or we can't say because of an
+--   error.
+data HaveIBeenPwnedResult =
+    HaveIBeenPwnedResult_Secure
+    -- ^ We could not find the password in any database, thus it is considered
+    -- "secure" as far as this library is concerned.
+  | HaveIBeenPwnedResult_Pwned Int
+    -- ^ How many times the password was found in public places. Usually this
+    -- will be a value greater than 0, but in any case if you hit this
+    -- constructor you must assume tha password has been leaked.
+  | HaveIBeenPwnedResult_Error
+    -- ^ The check failed for some reason. We can't say anything about the
+    -- password quality.
   deriving (Eq, Ord, Show)
 
 class Monad m => MonadPwned m where
@@ -90,16 +92,18 @@ instance (MonadLogger m, MonadIO m) => MonadPwned (PwnedT m) where
   case result' of
     Left err -> do
       $(logError) $ T.pack $ show @ HttpException $ err
-      return HaveIBeenPwnedResult_ApiError
+      return HaveIBeenPwnedResult_Error
     Right result -> case responseStatus result of
-      Status 200 _ -> case parseHIBPResponse (responseBody result) rest of
-        Just n -> pure $ HaveIBeenPwnedResult_Disclosed n
-        Nothing -> do
-          $(logError) $ "Parsing number of occurrences failed. (Not an Int)."
-          pure HaveIBeenPwnedResult_ApiError
+      Status 200 _ -> do
+        let r = parseHIBPResponse (responseBody result) rest
+        case r of
+          HaveIBeenPwnedResult_Error ->
+            $(logError) $ "Parsing number of occurrences failed. (Not an Int)."
+          _ -> pure ()
+        pure r
       Status code phrase -> do
         $(logError) $ T.pack $ show $ Status code phrase
-        return HaveIBeenPwnedResult_ApiError
+        return HaveIBeenPwnedResult_Error
 
 
 -- | Get the sha1 digest for the supplied password, split into two parts, to agree with the
@@ -113,16 +117,16 @@ passwdDigest passwd = (T.take 5 digest, T.drop 5 digest)
 -- | The hibp response is a line separated list of colon separated hash
 -- *suffixes* and a number indicating the number of times that password(hash)
 -- has been seen in known publicly disclosed leaks
-parseHIBPResponse :: LBS.ByteString -> Text -> Maybe Int
+parseHIBPResponse :: LBS.ByteString -> Text -> HaveIBeenPwnedResult
 parseHIBPResponse response suffix =
   let
     digests :: [(LT.Text, Maybe Int)]
     digests = fmap (fmap (readMay . LT.unpack . LT.drop 1) . LT.breakOn ":") $ LT.lines $ Data.Text.Lazy.Encoding.decodeUtf8 response
   in case filter ((LT.fromStrict suffix ==) . fst) digests of
-    ((_,n):_) -> n
-    [] -> Just 0
+    ((_,n):_) -> maybe HaveIBeenPwnedResult_Error HaveIBeenPwnedResult_Pwned n
+    [] -> HaveIBeenPwnedResult_Secure
 
--- a really simple demo of the hibp functionality
+-- | A really simple demo of the hibp functionality
 consoleHaveIBeenPwned :: IO ()
 consoleHaveIBeenPwned = do
   runStdoutLoggingT $ do
@@ -131,11 +135,11 @@ consoleHaveIBeenPwned = do
     let hibpEnv = HaveIBeenPwnedConfig mgr "https://api.pwnedpasswords.com/range"
     p' <- flip runPwnedT hibpEnv $ haveIBeenPwned $ T.pack p
     liftIO $ case p' of
-      HaveIBeenPwnedResult_Disclosed 0 ->
+      HaveIBeenPwnedResult_Secure ->
         putStrLn "Your password does not appear in any known breaches.  Practice good password hygene."
-      HaveIBeenPwnedResult_Disclosed p'' ->
-        putStrLn $ "You have been pwned!  your password has appeared in breaches " ++ show p'' ++ " times."
-      HaveIBeenPwnedResult_ApiError ->
+      HaveIBeenPwnedResult_Pwned p'' ->
+        putStrLn $ "You have been pwned! Your password has appeared in breaches " ++ show p'' ++ " times."
+      HaveIBeenPwnedResult_Error ->
         putStrLn "Network Error, try again later"
 
 getPassword :: IO String
