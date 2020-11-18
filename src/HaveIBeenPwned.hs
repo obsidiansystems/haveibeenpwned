@@ -17,7 +17,7 @@
 --   get some means for rejecting very weak or just leaked passwords.
 module HaveIBeenPwned where
 
-import "cryptohash" Crypto.Hash -- or maybe i wanted cryptonite?
+import "cryptonite" Crypto.Hash -- or maybe i wanted cryptonite?
 import Control.Monad.Reader
 import Control.Monad.Logger
 import Control.Exception
@@ -125,32 +125,3 @@ parseHIBPResponse response suffix =
   in case filter ((LT.fromStrict suffix ==) . fst) digests of
     ((_,n):_) -> maybe HaveIBeenPwnedResult_Error HaveIBeenPwnedResult_Pwned n
     [] -> HaveIBeenPwnedResult_Secure
-
--- | A really simple demo of the hibp functionality
-consoleHaveIBeenPwned :: IO ()
-consoleHaveIBeenPwned = do
-  runStdoutLoggingT $ do
-    mgr <- liftIO $ newManager tlsManagerSettings
-    p <- liftIO $ getPassword
-    let hibpEnv = HaveIBeenPwnedConfig mgr "https://api.pwnedpasswords.com/range"
-    p' <- flip runPwnedT hibpEnv $ haveIBeenPwned $ T.pack p
-    liftIO $ case p' of
-      HaveIBeenPwnedResult_Secure ->
-        putStrLn "Your password does not appear in any known breaches.  Practice good password hygene."
-      HaveIBeenPwnedResult_Pwned p'' ->
-        putStrLn $ "You have been pwned! Your password has appeared in breaches " ++ show p'' ++ " times."
-      HaveIBeenPwnedResult_Error ->
-        putStrLn "Network Error, try again later"
-
-getPassword :: IO String
-getPassword = do
-  putStr "Password: "
-  hFlush stdout
-  password <- withEcho False getLine
-  putChar '\n'
-  return password
-
-withEcho :: Bool -> IO a -> IO a
-withEcho echo action = do
-  old <- hGetEcho stdin
-  bracket_ (hSetEcho stdin echo) (hSetEcho stdin old) action
