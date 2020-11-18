@@ -13,7 +13,6 @@ Example
 -------
 
 > {-# LANGUAGE OverloadedStrings #-}
-> module Readme where
 >
 > import Control.Monad.IO.Class (liftIO)
 > import Control.Monad.Logger (runStdoutLoggingT)
