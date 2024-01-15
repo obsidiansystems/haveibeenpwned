@@ -84,7 +84,7 @@ instance (MonadLogger m, MonadIO m) => MonadPwned (PwnedT m) where
   result' <- liftIO $ try $ httpLbs request (_haveIBeenPwnedConfig_manager cfg)
   case result' of
     Left err -> do
-      $(logError) $ T.pack $ show @ HttpException $ err
+      $(logError) $ T.pack $ show @HttpException $ err
       return HaveIBeenPwnedResult_Error
     Right result -> case responseStatus result of
       Status 200 _ -> do

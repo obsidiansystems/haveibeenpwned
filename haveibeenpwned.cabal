@@ -14,21 +14,21 @@ copyright:          2019 Obsidian Systems LLC
 category:           Web
 extra-source-files: CHANGELOG.md
                     README.md
-tested-with:        GHC ==8.6.5 || ==8.8.4
+tested-with:        GHC ==8.6.5 || ==8.8.4  || ==9.8.1
 
 library
   exposed-modules:  HaveIBeenPwned
   build-depends:
-    , base             >=4.11.0   && <4.15
-    , bytestring       ^>=0.10.8
-    , cryptonite       >=0.24     && <0.28
+    , base             >=4.11.0   && <4.20
+    , bytestring       >=0.10     && <0.13
+    , cryptonite       >=0.24     && <0.31
     , data-default     ^>=0.7.1
-    , http-client      >=0.5.13.1 && <0.7
+    , http-client      >=0.5.13.1 && <0.8
     , http-types       ^>=0.12.1
     , monad-logger     ^>=0.3.29
     , mtl              ^>=2.2.2
     , safe             ^>=0.3.17
-    , text             ^>=1.2.3
+    , text             >=1.2      && <2.2
 
   ghc-options:      -Wall
   hs-source-dirs:   src
