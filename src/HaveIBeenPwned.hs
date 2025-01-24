@@ -13,7 +13,7 @@
 --   get some means for rejecting very weak or just leaked passwords.
 module HaveIBeenPwned where
 
-import "cryptonite" Crypto.Hash
+import Crypto.Hash
 import Control.Exception
 import Control.Monad.Logger
 import Control.Monad.Reader
