@@ -14,14 +14,14 @@ copyright:          2019 Obsidian Systems LLC
 category:           Web
 extra-source-files: CHANGELOG.md
                     README.md
-tested-with:        GHC ==8.6.5 || ==8.8.4  || ==9.8.1 || ==9.10.1 || ==9.12.1
+tested-with:        GHC ==8.8.4 || ==8.10.7 || ==9.0.2 || ==9.2.8 || ==9.4.8 || ==9.6.6 || ==9.8.4 || ==9.10.1 || ==9.12.1
 
 library
   exposed-modules:  HaveIBeenPwned
   build-depends:
     , base             >=4.11.0   && <4.22
     , bytestring       >=0.10     && <0.13
-    , cryptonite       >=0.24     && <0.31
+    , crypton          >=0.32     && <1.1
     , data-default     >=0.7.1    && <0.9
     , http-client      >=0.5.13.1 && <0.8
     , http-types       ^>=0.12.1

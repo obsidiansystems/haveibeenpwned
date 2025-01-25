@@ -1,5 +1,10 @@
 # Revision history for haveibeenpwned
 
+## Unreleased
+
+* Switch from cryptonite to crypton
+* Drop support for GHC 8.6
+
 ## 0.2.0.3
 
 * Support for GHC 9.12
