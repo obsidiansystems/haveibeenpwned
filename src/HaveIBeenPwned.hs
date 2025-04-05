@@ -111,10 +111,12 @@ passwdDigest passwd = (T.take 5 digest, T.drop 5 digest)
 -- *suffixes* and a number indicating the number of times that password(hash)
 -- has been seen in known publicly disclosed leaks
 parseHIBPResponse :: LBS.ByteString -> Text -> HaveIBeenPwnedResult
-parseHIBPResponse response suffix =
-  let
-    digests :: [(LT.Text, Maybe Int)]
-    digests = fmap (fmap (readMay . LT.unpack . LT.drop 1) . LT.breakOn ":") $ LT.lines $ Data.Text.Lazy.Encoding.decodeUtf8 response
-  in case filter ((LT.fromStrict suffix ==) . fst) digests of
-    ((_,n):_) -> maybe HaveIBeenPwnedResult_Error HaveIBeenPwnedResult_Pwned n
-    [] -> HaveIBeenPwnedResult_Secure
+parseHIBPResponse response suffix = case Data.Text.Lazy.Encoding.decodeUtf8' response of
+  Left _ -> HaveIBeenPwnedResult_Error
+  Right resp ->
+    let
+      digests :: [(LT.Text, Maybe Int)]
+      digests = fmap (fmap (readMay . LT.unpack . LT.drop 1) . LT.breakOn ":") $ LT.lines resp
+    in case filter ((LT.fromStrict suffix ==) . fst) digests of
+      ((_,n):_) -> maybe HaveIBeenPwnedResult_Error HaveIBeenPwnedResult_Pwned n
+      [] -> HaveIBeenPwnedResult_Secure
